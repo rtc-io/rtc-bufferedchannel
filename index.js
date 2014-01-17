@@ -21,9 +21,13 @@ module.exports = function(dc) {
   var channel = new EventEmitter();
 
   function handleMessage(evt) {
+    if (evt && evt.data) {
+      channel.emit('data', evt.data);
+    }
   }
 
   function send(data) {
+    dc.send(data);
   }
 
   // patch in the send function

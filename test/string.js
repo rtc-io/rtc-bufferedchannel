@@ -19,6 +19,7 @@ test('have dc connectivity', function(t) {
 
   channels[1].onmessage = function(evt) {
     t.equal(evt.data, 'hi', 'got hi from channel:0');
+    channels[1].onmessage = null;
   };
 
   channels[0].send('hi');
@@ -30,4 +31,14 @@ test('create buffered channels for existing channels', function(t) {
 
   t.equal(bcs.length, 2, 'created 2 buffered channels');
   t.equal(typeof bcs[0].send, 'function', 'buffered channels have a send function');
+});
+
+test('small string data is send straight through', function(t) {
+  t.plan(1);
+
+  bcs[1].once('data', function(data) {
+    t.equal(data, 'hi', 'bufferedchannel:1 received hi');
+  });
+
+  bcs[0].send('hi');
 });
