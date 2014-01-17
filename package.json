@@ -25,5 +25,8 @@
   "devDependencies": {
     "tape": "~2.3.2",
     "peerpair": "~0.4.0"
+  },
+  "dependencies": {
+    "utf8-length": "0.0.1"
   }
 }

@@ -4,6 +4,7 @@ var peerpair = require('peerpair');
 var peers = peerpair();
 var channels;
 var bcs;
+var moonLanding = require('./data/moonlanding');
 
 test('create test connections', function(t) {
   t.plan(2);
@@ -41,4 +42,7 @@ test('small string data is send straight through', function(t) {
   });
 
   bcs[0].send('hi');
+});
+
+test('moonlanding image is chunked', function(t) {
 });
