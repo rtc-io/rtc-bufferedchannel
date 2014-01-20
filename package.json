@@ -24,7 +24,8 @@
   "homepage": "https://github.com/rtc-io/rtc-bufferedchannel",
   "devDependencies": {
     "tape": "~2.3.2",
-    "peerpair": "~0.4.0"
+    "peerpair": "~0.4.0",
+    "rtc-quickconnect": "~0.8.1"
   },
   "dependencies": {}
 }
