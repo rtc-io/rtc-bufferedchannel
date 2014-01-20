@@ -2,7 +2,6 @@
 'use strict';
 
 var EventEmitter = require('events').EventEmitter;
-var bytes = require('utf8-length');
 var metaHeader = 'CHUNKS';
 var metaHeaderLength = metaHeader.length;
 var reByteChar = /%..|./;
