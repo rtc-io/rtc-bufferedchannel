@@ -5,6 +5,35 @@ var peers = peerpair();
 var channels;
 var bcs;
 var moonLanding = require('./data/moonlanding');
+var mentos = require('./data/dietcoke-mentos');
+
+function checkChunks(input, expectedChunks) {
+  return function(t) {
+    var saveHandler;
+
+    function expect(count) {
+      return function(evt) {
+        count -= 1;
+
+        if (count === 0) {
+          t.pass('got expected number of chunks');
+          channels[1].onmessage = saveHandler;
+        }
+      }
+    }
+
+    function readHeader(evt) {
+      t.equal(evt.data, 'CHUNKS:' + expectedChunks, 'will receive ' + expectedChunks + ' chunks');
+      channels[1].onmessage = expect(expectedChunks);
+    }
+
+    t.plan(2);
+    saveHandler = channels[1].onmessage;
+    channels[1].onmessage = readHeader;
+
+    bcs[0].send(input);
+  }
+}
 
 test('create test connections', function(t) {
   t.plan(2);
@@ -44,33 +73,7 @@ test('small string data is send straight through', function(t) {
   bcs[0].send('hi');
 });
 
-test('moonlanding image is chunked', function(t) {
-
-  var saveHandler;
-
-  function expect(count) {
-    return function(evt) {
-      count -= 1;
-
-      if (count === 0) {
-        t.pass('got expected number of chunks');
-        channels[1].onmessage = saveHandler;
-      }
-    }
-  }
-
-  function readHeader(evt) {
-    t.equal(evt.data, 'CHUNKS:3', 'will receive three chunks');
-    channels[1].onmessage = expect(3);
-  }
-
-  t.plan(2);
-  saveHandler = channels[1].onmessage;
-  channels[1].onmessage = readHeader;
-
-  bcs[0].send(moonLanding);
-});
-
+test('moonlanding image is chunked', checkChunks(moonLanding, 2));
 test('moonlanding image sent through as expected', function(t) {
   t.plan(1);
 
@@ -80,3 +83,15 @@ test('moonlanding image sent through as expected', function(t) {
 
   bcs[0].send(moonLanding);
 });
+
+test('mentos image is chunked', checkChunks(mentos, 36));
+test('mentos image sent through as expected', function(t) {
+  t.plan(1);
+
+  bcs[1].once('data', function(data) {
+    t.equal(data, mentos, 'data correctly rebuilt');
+  });
+
+  bcs[0].send(mentos);
+});
+

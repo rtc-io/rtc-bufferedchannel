@@ -5,6 +5,7 @@ var EventEmitter = require('events').EventEmitter;
 var bytes = require('utf8-length');
 var metaHeader = 'CHUNKS';
 var metaHeaderLength = metaHeader.length;
+var reByteChar = /%..|./;
 
 /**
   # rtc-bufferedchannel
@@ -37,7 +38,7 @@ module.exports = function(dc, opts) {
   function buildData() {
     switch (queueDataType) {
       case 'string': {
-        return collectedQueue.join('');
+        return collectedQueue.splice(0).join('');
       }
     }
   } 
@@ -76,35 +77,41 @@ module.exports = function(dc, opts) {
   function send(data) {
     var size;
     var chunks = [];
-
+    var abort = false;
+    var charSize;
+    var currentSize = 0;
+    var currentStartIndex = 0;
+    var ii = 0;
+    var length;
 
     if (typeof data == 'string' || (data instanceof String)) {
-      // calculate the utf8 encoding size of the data
-      size = bytes(data);
+      // organise into data chunks
+      length = data.length;
+      while (ii < length) {
+        // calculate the current character size
+        charSize = ~-encodeURI(data.charAt(ii)).split(reByteChar).length;
 
-      // chop the string into the correct number of bytes
-      if (size < maxSize) {
-        chunks = [ data ];
+        // if this will tip us over the limit, copy the chunk
+        if (currentSize + charSize >= maxSize) {
+          // copy the chunk
+          chunks[chunks.length] = data.slice(currentStartIndex, ii);
+
+          // reset tracking variables
+          currentStartIndex = ii;
+          currentSize = 0;
+        }
+        // otherwise, increment the current chunk size
+        else {
+          currentSize += charSize;
+        }
+
+        // increment the index
+        ii += 1;
       }
-      else {
-        while (size > maxSize) {
-          // create the first chunk from the input data
-          // this is done by slicing off half of the maximum size input
-          // string, as the a JS string can occupy at most 2 bytes
-          // TODO: make this smarter...
-          chunks[chunks.length] = data.slice(0, maxSize >> 1);
 
-          // get the remaining data
-          data = data.slice(maxSize >> 1);
-
-          // update the size
-          size = bytes(data);
-        }
-
-        // if we have some bytes, add a chunk
-        if (size > 0) {
-          chunks.push(data);
-        }
+      // if we have a pending chunk, then add it
+      if (currentSize > 0) {
+        chunks[chunks.length] = data.slice(currentStartIndex);
       }
     }
 
@@ -117,7 +124,20 @@ module.exports = function(dc, opts) {
 
       // send the chunks
       chunks.forEach(function(chunk) {
-        dc.send(chunk);
+        if (abort) {
+          return;
+        }
+
+        try {
+          dc.send(chunk);
+        }
+        catch (e) {
+          console.error('error sending chunk: ', e);
+          console.log('buffered amount = ' + dc.bufferedAmount);
+          console.log('ready state = ' + dc.readyState);
+
+          abort = true;
+        }
       });
     }
   }
