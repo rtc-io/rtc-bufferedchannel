@@ -86,6 +86,26 @@ module.exports = function(dc, opts) {
       if (size < maxSize) {
         chunks = [ data ];
       }
+      else {
+        while (size > maxSize) {
+          // create the first chunk from the input data
+          // this is done by slicing off half of the maximum size input
+          // string, as the a JS string can occupy at most 2 bytes
+          // TODO: make this smarter...
+          chunks[chunks.length] = data.slice(0, maxSize >> 1);
+
+          // get the remaining data
+          data = data.slice(maxSize >> 1);
+
+          // update the size
+          size = bytes(data);
+        }
+
+        // if we have some bytes, add a chunk
+        if (size > 0) {
+          chunks.push(data);
+        }
+      }
     }
 
     // if we only have one chunk, just send the data

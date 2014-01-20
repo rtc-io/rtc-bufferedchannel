@@ -45,4 +45,38 @@ test('small string data is send straight through', function(t) {
 });
 
 test('moonlanding image is chunked', function(t) {
+
+  var saveHandler;
+
+  function expect(count) {
+    return function(evt) {
+      count -= 1;
+
+      if (count === 0) {
+        t.pass('got expected number of chunks');
+        channels[1].onmessage = saveHandler;
+      }
+    }
+  }
+
+  function readHeader(evt) {
+    t.equal(evt.data, 'CHUNKS:3', 'will receive three chunks');
+    channels[1].onmessage = expect(3);
+  }
+
+  t.plan(2);
+  saveHandler = channels[1].onmessage;
+  channels[1].onmessage = readHeader;
+
+  bcs[0].send(moonLanding);
+});
+
+test('moonlanding image sent through as expected', function(t) {
+  t.plan(1);
+
+  bcs[1].once('data', function(data) {
+    t.equal(data, moonLanding, 'data correctly rebuilt');
+  });
+
+  bcs[0].send(moonLanding);
 });
