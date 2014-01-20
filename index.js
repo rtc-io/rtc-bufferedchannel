@@ -15,7 +15,12 @@ var reByteChar = /%..|./;
 
   ## Example Usage
 
-  To be completed.
+  Shown below is a simple example of how you might use a buffered channel to
+  send data that is larger than what you can typically send over a webrtc
+  data channel:
+
+  <<< examples/have-some-mentos.js
+  
 **/
 module.exports = function(dc, opts) {
   // create an event emitter that will replace our datachannel
@@ -33,6 +38,10 @@ module.exports = function(dc, opts) {
   var pendingChunks = 0;
   var collectedQueue = [];
   var queueDataType;
+
+  // initialise the send queue
+  var sendQueue = [];
+  var sendTimer = 0;
 
   function buildData() {
     switch (queueDataType) {
@@ -71,6 +80,16 @@ module.exports = function(dc, opts) {
         channel.emit('data', evt.data);
       }
     }
+  }
+
+  function queue(payload) {
+    if (payload) {
+      // add the payload to the send queue
+      sendQueue[sendQueue.length] = payload;
+    }
+
+    clearTimeout(sendTimer);
+    sendTimer = setTimeout(transmit, 0);
   }
 
   function send(data) {
@@ -116,28 +135,32 @@ module.exports = function(dc, opts) {
 
     // if we only have one chunk, just send the data
     if (chunks.length === 1) {
-      dc.send(chunks[0]);
+      queue(chunks[0]);
     }
     else {
-      dc.send(metaHeader + ':' + chunks.length);
+      queue(metaHeader + ':' + chunks.length);
+      chunks.forEach(queue);
+    }
+  }
 
-      // send the chunks
-      chunks.forEach(function(chunk) {
-        if (abort) {
-          return;
-        }
+  function transmit() {
+    var next = sendQueue.shift();
 
-        try {
-          dc.send(chunk);
-        }
-        catch (e) {
-          console.error('error sending chunk: ', e);
-          console.log('buffered amount = ' + dc.bufferedAmount);
-          console.log('ready state = ' + dc.readyState);
+    // if we have cleaned out the queue then abort
+    if (! next) {
+      return;
+    }
 
-          abort = true;
-        }
-      });
+    try {
+      dc.send(next);
+      queue();
+    }
+    catch (e) {
+      console.error('error sending chunk: ', e);
+      console.log('buffered amount = ' + dc.bufferedAmount);
+      console.log('ready state = ' + dc.readyState);
+
+      // TODO: reset the send queue?
     }
   }
 
