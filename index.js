@@ -254,6 +254,9 @@ module.exports = function(dc, opts) {
     }
   }
 
+  // set the binary type on the datachannel to array buffer
+  dc.binaryType = 'arraybuffer';
+
   // patch in the send function
   channel.send = send;
 
