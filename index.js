@@ -29,8 +29,8 @@ var DEFAULT_MAXSIZE = 1024 * 16;
 
   ### Typed Array Handling
 
-  Since `rtc-bufferedchannel@0.3` all manner of typed integer (int, uint, etc)
-  are catered for and correctly chunked to ensure successful delivery.
+  Since `rtc-bufferedchannel@0.3` all manner of typed integer arrays (int, 
+  uint, etc) are catered for and correctly chunked to ensure successful delivery.
   Additionally, the module will provide identification of the typed array type
   before sending the raw data across the wire.  Using this functionality when
   you receive the `data` event from the buffered channel you will receive the
