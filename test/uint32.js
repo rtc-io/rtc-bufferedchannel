@@ -10,7 +10,7 @@ var smallArray = createArray(Uint32Array, Math.pow(2, 32) - 1, 100);
 var largeArray = createArray(Uint32Array, Math.pow(2, 32) - 1, 45 * 1024);
 var massiveArray = createArray(Uint32Array, Math.pow(2, 32) - 1, 1035 * 1024);
 
-test('create test connections', function(t) {
+test('uint32: create test connections', function(t) {
   t.plan(2);
   peers.createChannelsAndConnect('test', function(err, dcs) {
     t.ifError(err);
@@ -20,7 +20,7 @@ test('create test connections', function(t) {
   });
 });
 
-test('have dc connectivity', function(t) {
+test('uint32: have dc connectivity', function(t) {
   t.plan(1);
 
   channels[1].onmessage = function(evt) {
@@ -31,7 +31,7 @@ test('have dc connectivity', function(t) {
   channels[0].send('hi');
 });
 
-test('create buffered channels for existing channels', function(t) {
+test('uint32: create buffered channels for existing channels', function(t) {
   t.plan(2);
 
   channels.forEach(function(dc, index) {
@@ -42,8 +42,8 @@ test('create buffered channels for existing channels', function(t) {
   t.equal(typeof bcs[0].send, 'function', 'buffered channels have a send function');
 });
 
-test('small array is chunked', checkChunks(smallArray, 1, 'uint32'));
-test('small array is sent ok', function(t) {
+test('uint32: small array is chunked', checkChunks(smallArray, 1, 'uint32'));
+test('uint32: small array is sent ok', function(t) {
   t.plan(1);
 
   bcs[1].once('data', function(data) {
@@ -58,8 +58,8 @@ test('small array is sent ok', function(t) {
   bcs[0].send(smallArray);
 });
 
-test('large array is chunked', checkChunks(largeArray, 12, 'uint32'));
-test('large array is sent ok', function(t) {
+test('uint32: large array is chunked', checkChunks(largeArray, 12, 'uint32'));
+test('uint32: large array is sent ok', function(t) {
   t.plan(1);
 
   bcs[1].once('data', function(data) {
@@ -82,8 +82,8 @@ test('large array is sent ok', function(t) {
 });
 
 
-test('massive array is chunked', checkChunks(massiveArray, 259, 'uint32'));
-test('massive array is sent ok', function(t) {
+test('uint32: massive array is chunked', checkChunks(massiveArray, 259, 'uint32'));
+test('uint32: massive array is sent ok', function(t) {
   t.plan(1);
 
   bcs[1].once('data', function(data) {

@@ -11,7 +11,7 @@ var largeArray = createArray(Uint8ClampedArray, Math.pow(2, 8) - 1, 45 * 1024);
 var massiveArray = createArray(Uint8ClampedArray, Math.pow(2, 8) - 1, 1035 * 1024);
 
 
-test('create test connections', function(t) {
+test('uint8clamped: create test connections', function(t) {
   t.plan(2);
   peers.createChannelsAndConnect('test', function(err, dcs) {
     t.ifError(err);
@@ -21,7 +21,7 @@ test('create test connections', function(t) {
   });
 });
 
-test('have dc connectivity', function(t) {
+test('uint8clamped: have dc connectivity', function(t) {
   t.plan(1);
 
   channels[1].onmessage = function(evt) {
@@ -32,7 +32,7 @@ test('have dc connectivity', function(t) {
   channels[0].send('hi');
 });
 
-test('create buffered channels for existing channels', function(t) {
+test('uint8clamped: create buffered channels for existing channels', function(t) {
   t.plan(2);
 
   channels.forEach(function(dc, index) {
@@ -43,8 +43,8 @@ test('create buffered channels for existing channels', function(t) {
   t.equal(typeof bcs[0].send, 'function', 'buffered channels have a send function');
 });
 
-test('small array is chunked', checkChunks(smallArray, 1, 'uint8clamped'));
-test('small array is sent ok', function(t) {
+test('uint8clamped: small array is chunked', checkChunks(smallArray, 1, 'uint8clamped'));
+test('uint8clamped: small array is sent ok', function(t) {
   t.plan(1);
 
   bcs[1].once('data', function(data) {
@@ -59,8 +59,8 @@ test('small array is sent ok', function(t) {
   bcs[0].send(smallArray);
 });
 
-test('large array is chunked', checkChunks(largeArray, 3, 'uint8clamped'));
-test('large array is sent ok', function(t) {
+test('uint8clamped: large array is chunked', checkChunks(largeArray, 3, 'uint8clamped'));
+test('uint8clamped: large array is sent ok', function(t) {
   t.plan(1);
 
   bcs[1].once('data', function(data) {
@@ -83,8 +83,8 @@ test('large array is sent ok', function(t) {
 });
 
 
-test('massive array is chunked', checkChunks(massiveArray, 65, 'uint8clamped'));
-test('massive array is sent ok', function(t) {
+test('uint8clamped: massive array is chunked', checkChunks(massiveArray, 65, 'uint8clamped'));
+test('uint8clamped: massive array is sent ok', function(t) {
   t.plan(1);
 
   bcs[1].once('data', function(data) {
