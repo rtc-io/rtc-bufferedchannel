@@ -57,11 +57,8 @@ module.exports = function(dc, opts) {
 
     // otherwise, rebuild the array buffer into the correct view type
     totalByteSize = input.reduce(function(memo, buffer) {
-      console.log(memo, buffer.byteLength);
       return memo + buffer.byteLength;
     }, 0);
-
-    console.log('recreating buffer, total byte size: ' + totalByteSize);
 
     // create data view
     dataView = createDataView(queueDataType, totalByteSize);
@@ -69,7 +66,7 @@ module.exports = function(dc, opts) {
     // iterate through the collected queue and set the data
     input.forEach(function(chunk) {
       dataView.set(new dataView.constructor(chunk), lastOffset);
-      lastOffset += (chunk.byteLength / dataView.bytesPerElement) | 0;
+      lastOffset = lastOffset + ((chunk.byteLength / dataView.BYTES_PER_ELEMENT) | 0);
     });
 
     return dataView;
@@ -77,6 +74,29 @@ module.exports = function(dc, opts) {
 
   function createDataView(dt, size) {
     switch (dt) {
+      case 'uint8clamped': {
+        return new Uint8ClampedArray(size);
+      }
+
+      case 'uint16': {
+        return new Uint16Array(size >> 1);
+      }
+
+      case 'uint32': {
+        return new Uint32Array(size >> 2);
+      }
+
+      case 'int8': {
+        return new Int8Array(size);
+      }
+
+      case 'int16': {
+        return new Int16Array(size >> 1);
+      }
+
+      case 'int32': {
+        return new Int32Array(size >> 2);
+      }
     }
 
     return new Uint8Array(size);
@@ -186,7 +206,7 @@ module.exports = function(dc, opts) {
     }
     else if (data && data.buffer && data.buffer instanceof ArrayBuffer) {
       // derive the data type
-      dataType = 'uint8';
+      dataType = data.constructor.name.slice(0, -5).toLowerCase();
 
       if (data.byteLength < maxSize) {
         chunks[0] = data;
