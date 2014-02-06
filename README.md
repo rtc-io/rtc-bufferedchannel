@@ -10,6 +10,30 @@ sent over the channel complies with the current data channel size limits
 [![Build Status](https://travis-ci.org/rtc-io/rtc-bufferedchannel.png?branch=master)](https://travis-ci.org/rtc-io/rtc-bufferedchannel)
 [![unstable](http://hughsk.github.io/stability-badges/dist/unstable.svg)](http://github.com/hughsk/stability-badges)
 
+## How it Works
+
+The `rtc-bufferedchannel` works by wrapping a standard `RTCDataChannel` with
+an object that proxies `send` function calls and emits data through an
+`channel.on('data', handler)` event handler for receiving data.  When you
+call the `send` function provided by buffered channel it determines the size
+of the message that you are sending and determines whether that needs to be
+"chunked" to assist with successful delivery of your data.
+
+At this present point in time, a browser will complain if you attempt to
+send large payloads of data via a data channel, and this is where the
+`rtc-bufferedchannel` module comes to your rescue.
+
+### Typed Array Handling
+
+Since `rtc-bufferedchannel@0.3` all manner of typed integer (int, uint, etc)
+are catered for and correctly chunked to ensure successful delivery.
+Additionally, the module will provide identification of the typed array type
+before sending the raw data across the wire.  Using this functionality when
+you receive the `data` event from the buffered channel you will receive the
+data in the same format it was sent from your peer, i.e.
+`Uint8Array` in, `Uint8Array` out which is different to the standard
+data channel functionality.
+
 ## Example Usage
 
 Shown below is a simple example of how you might use a buffered channel to
