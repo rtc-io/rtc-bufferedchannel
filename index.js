@@ -5,6 +5,7 @@ var EventEmitter = require('events').EventEmitter;
 var metaHeader = 'CHUNKS';
 var metaHeaderLength = metaHeader.length;
 var reByteChar = /%..|./;
+var DEFAULT_MAXSIZE = 1024 * 16;
 
 /**
   # rtc-bufferedchannel
@@ -32,7 +33,7 @@ module.exports = function(dc, opts) {
   // which at this stage is recommended to be 16Kb for interop between
   // firefox and chrome
   // see https://groups.google.com/forum/#!topic/discuss-webrtc/AefA5Pg_xIU
-  var maxSize = (opts || {}).maxsize || (1024 * 16);
+  var maxSize = (opts || {}).maxsize || DEFAULT_MAXSIZE;
 
   // initilaise the pending chunks count to 0
   var pendingChunks = 0;
@@ -44,12 +45,50 @@ module.exports = function(dc, opts) {
   var sendTimer = 0;
 
   function buildData() {
-    switch (queueDataType) {
-      case 'string': {
-        return collectedQueue.splice(0).join('');
-      }
+    var totalByteSize = 0;
+    var lastOffset = 0;
+    var input = collectedQueue.splice(0);
+    var dataView;
+
+    // if we have string data, then it's simple
+    if (queueDataType === 'string') {
+      return input.join('');
     }
-  } 
+
+    // otherwise, rebuild the array buffer into the correct view type
+    totalByteSize = input.reduce(function(memo, buffer) {
+      console.log(memo, buffer.byteLength);
+      return memo + buffer.byteLength;
+    }, 0);
+
+    console.log('recreating buffer, total byte size: ' + totalByteSize);
+
+    // create data view
+    dataView = createDataView(queueDataType, totalByteSize);
+
+    // iterate through the collected queue and set the data
+    input.forEach(function(chunk) {
+      dataView.set(new dataView.constructor(chunk), lastOffset);
+      lastOffset += (chunk.byteLength / dataView.bytesPerElement) | 0;
+    });
+
+    return dataView;
+  }
+
+  function createDataView(dt, size) {
+    switch (dt) {
+    }
+
+    return new Uint8Array(size);
+  }
+
+  function handleClose(evt) {
+    console.log('received dc close', evt);
+  }
+
+  function handleError(evt) {
+    console.log('received dc error: ', evt);
+  }
 
   function handleMessage(evt) {
     var haveData = evt && evt.data;
@@ -82,14 +121,26 @@ module.exports = function(dc, opts) {
     }
   }
 
-  function queue(payload) {
+  function queue(payload, timeout) {
     if (payload) {
       // add the payload to the send queue
       sendQueue[sendQueue.length] = payload;
     }
 
-    clearTimeout(sendTimer);
-    sendTimer = setTimeout(transmit, 0);
+    // queue a transmit only if not already queued
+    sendTimer = sendTimer || setTimeout(transmit, timeout || 0);
+  }
+
+  function segmentArrayBuffer(input) {
+    var chunks = [];
+    var offset = 0;
+
+    while (offset < input.byteLength) {
+      chunks.push(input.slice(offset, offset + maxSize));
+      offset += maxSize;
+    }
+
+    return chunks;
   }
 
   function send(data) {
@@ -101,6 +152,7 @@ module.exports = function(dc, opts) {
     var currentStartIndex = 0;
     var ii = 0;
     var length;
+    var dataType;
 
     if (typeof data == 'string' || (data instanceof String)) {
       // organise into data chunks
@@ -132,13 +184,27 @@ module.exports = function(dc, opts) {
         chunks[chunks.length] = data.slice(currentStartIndex);
       }
     }
+    else if (data && data.buffer && data.buffer instanceof ArrayBuffer) {
+      // derive the data type
+      dataType = 'uint8';
+
+      if (data.byteLength < maxSize) {
+        chunks[0] = data;
+      }
+      else {
+        chunks = segmentArrayBuffer(data.buffer);
+      }
+    }
+    // else if (data instanceof ArrayBuffer) {
+    //   console.log('got an array buffer');
+    // }
 
     // if we only have one chunk, just send the data
-    if (chunks.length === 1) {
+    if ((! dataType) && chunks.length === 1) {
       queue(chunks[0]);
     }
     else {
-      queue(metaHeader + ':' + chunks.length);
+      queue(metaHeader + ':' + chunks.length + ':' + (dataType || 'string'));
       chunks.forEach(queue);
     }
   }
@@ -146,8 +212,11 @@ module.exports = function(dc, opts) {
   function transmit() {
     var next = sendQueue.shift();
 
+    // reset the send timer to 0 (means queuing will again occur)
+    sendTimer = 0;
+
     // if we have cleaned out the queue then abort
-    if (! next) {
+    if (dc.readyState !== 'open' || (! next)) {
       return;
     }
 
@@ -161,6 +230,7 @@ module.exports = function(dc, opts) {
       console.log('ready state = ' + dc.readyState);
 
       // TODO: reset the send queue?
+      queue(null, 100);
     }
   }
 
@@ -169,6 +239,10 @@ module.exports = function(dc, opts) {
 
   // handle data channel message events
   dc.onmessage = handleMessage;
+
+  // handle the channel close
+  dc.onclose = handleClose;
+  dc.onerror = handleError;
 
   return channel;
 };
