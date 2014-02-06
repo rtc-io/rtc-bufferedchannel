@@ -4,7 +4,7 @@
   "description": "Wraps a core browser RTCDataChannel with a buffering layer to ensure data channel send limits are observed",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "$(npm bin)/zuul -- test/all.js",
     "gendocs": "gendocs > README.md"
   },
   "repository": {
@@ -25,7 +25,9 @@
   "devDependencies": {
     "tape": "~2.3.2",
     "peerpair": "~0.4.0",
-    "rtc-quickconnect": "~0.11.2"
+    "rtc-quickconnect": "~0.11.2",
+    "mocha": "~1.17.1",
+    "zuul": "~1.5.2"
   },
   "dependencies": {}
 }
