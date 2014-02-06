@@ -5,3 +5,7 @@ notifications:
   email:
   - damon.oehlman@nicta.com.au
   irc: irc.freenode.org#rtc.io
+env:
+  global:
+  - secure: IWVvLeAGaNdkRsmO2pFFgYCkySR6qw6lxPq15tmlxJzrB8q9kp/mtquXwNhAKJTxMtGGotYOpnFJiTb9Sl1imuRqN5x2efc5ZfFMcTHuGiPquBCU9iY1CswP/4AkaMiOXl66MTAgu7YBg/AEMJU4xGukN4ndQKGo6pHR3a2wa0Y=
+  - secure: Um3W3gKUgevXafYIgIhYIsSbfys5fm2LHpKWLKPK21lvZ/LzWkwgEg7M5KJgx16l18VoI4ZoHJEHECjuGt189gK2bF5LisZteAcxQiWOHwISfVado8Lt4sgj/75jGDxs4QkLlGcDBRdFSjPelKoWTOfLh8npcySTACIvkdP9xCA=
