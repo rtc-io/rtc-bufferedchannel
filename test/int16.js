@@ -1,14 +1,14 @@
 var test = require('tape');
 var bufferedchannel = require('..');
 var peerpair = require('peerpair');
-var createArray = require('./helpers/create-uintarray');
+var createArray = require('./helpers/create-intarray');
 var peers = peerpair();
 var channels = [];
 var bcs = [];
 var checkChunks = require('./helpers/check-chunks')(channels, bcs);
-var smallArray = createArray(Uint8Array, Math.pow(2, 8) - 1, 100);
-var largeArray = createArray(Uint8Array, Math.pow(2, 8) - 1, 45 * 1024);
-var massiveArray = createArray(Uint8Array, Math.pow(2, 8) - 1, 1035 * 1024);
+var smallArray = createArray(Int16Array, Math.pow(2, 16), 100);
+var largeArray = createArray(Int16Array, Math.pow(2, 16), 45 * 1024);
+var massiveArray = createArray(Int16Array, Math.pow(2, 16), 1035 * 1024);
 
 
 test('create test connections', function(t) {
@@ -43,7 +43,7 @@ test('create buffered channels for existing channels', function(t) {
   t.equal(typeof bcs[0].send, 'function', 'buffered channels have a send function');
 });
 
-test('small array is chunked', checkChunks(smallArray, 1, 'uint8'));
+test('small array is chunked', checkChunks(smallArray, 1, 'int16'));
 test('small array is sent ok', function(t) {
   t.plan(1);
 
@@ -59,7 +59,7 @@ test('small array is sent ok', function(t) {
   bcs[0].send(smallArray);
 });
 
-test('large array is chunked', checkChunks(largeArray, 3, 'uint8'));
+test('large array is chunked', checkChunks(largeArray, 6, 'int16'));
 test('large array is sent ok', function(t) {
   t.plan(1);
 
@@ -83,7 +83,7 @@ test('large array is sent ok', function(t) {
 });
 
 
-test('massive array is chunked', checkChunks(massiveArray, 65, 'uint8'));
+test('massive array is chunked', checkChunks(massiveArray, 130, 'int16'));
 test('massive array is sent ok', function(t) {
   t.plan(1);
 

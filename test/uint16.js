@@ -6,9 +6,9 @@ var peers = peerpair();
 var channels = [];
 var bcs = [];
 var checkChunks = require('./helpers/check-chunks')(channels, bcs);
-var smallArray = createArray(Uint8Array, Math.pow(2, 8) - 1, 100);
-var largeArray = createArray(Uint8Array, Math.pow(2, 8) - 1, 45 * 1024);
-var massiveArray = createArray(Uint8Array, Math.pow(2, 8) - 1, 1035 * 1024);
+var smallArray = createArray(Uint16Array, Math.pow(2, 16) - 1, 100);
+var largeArray = createArray(Uint16Array, Math.pow(2, 16) - 1, 45 * 1024);
+var massiveArray = createArray(Uint16Array, Math.pow(2, 16) - 1, 1035 * 1024);
 
 
 test('create test connections', function(t) {
@@ -43,7 +43,7 @@ test('create buffered channels for existing channels', function(t) {
   t.equal(typeof bcs[0].send, 'function', 'buffered channels have a send function');
 });
 
-test('small array is chunked', checkChunks(smallArray, 1, 'uint8'));
+test('small array is chunked', checkChunks(smallArray, 1, 'uint16'));
 test('small array is sent ok', function(t) {
   t.plan(1);
 
@@ -59,7 +59,7 @@ test('small array is sent ok', function(t) {
   bcs[0].send(smallArray);
 });
 
-test('large array is chunked', checkChunks(largeArray, 3, 'uint8'));
+test('large array is chunked', checkChunks(largeArray, 6, 'uint16'));
 test('large array is sent ok', function(t) {
   t.plan(1);
 
@@ -67,13 +67,13 @@ test('large array is sent ok', function(t) {
     var equal = true;
     for (var ii = data.length; equal && ii--; ) {
       equal = data[ii] === largeArray[ii];
-      // if (! equal) {
-      //   console.log('failed at element: ' + ii);
-      //   console.log(data.length);
-      //   console.log(largeArray.length);
-      //   console.log(data[ii], largeArray[ii]);
-      //   console.log(data);
-      // }
+      if (! equal) {
+        console.log('failed at element: ' + ii);
+        console.log(data.length);
+        console.log(largeArray.length);
+        console.log(data[ii], largeArray[ii]);
+        console.log(data);
+      }
     }
 
     t.ok(equal, 'large array passed through correctly');
@@ -83,7 +83,7 @@ test('large array is sent ok', function(t) {
 });
 
 
-test('massive array is chunked', checkChunks(massiveArray, 65, 'uint8'));
+test('massive array is chunked', checkChunks(massiveArray, 130, 'uint16'));
 test('massive array is sent ok', function(t) {
   t.plan(1);
 
