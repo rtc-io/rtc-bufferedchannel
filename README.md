@@ -7,6 +7,7 @@ sent over the channel complies with the current data channel size limits
 
 [![NPM](https://nodei.co/npm/rtc-bufferedchannel.png)](https://nodei.co/npm/rtc-bufferedchannel/)
 
+[![Build Status](https://travis-ci.org/rtc-io/rtc-bufferedchannel.png?branch=master)](https://travis-ci.org/rtc-io/rtc-bufferedchannel)
 [![unstable](http://hughsk.github.io/stability-badges/dist/unstable.svg)](http://github.com/hughsk/stability-badges)
 
 ## Example Usage
