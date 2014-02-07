@@ -14,6 +14,10 @@ var DEFAULT_MAXSIZE = 1024 * 16;
   sent over the channel complies with the current data channel size limits
   (which is < 16Kb for firefox <--> chrome interop).
 
+  __NOTE:__ The `rtc-bufferedchannel` module is able to wrap any standard
+  `RTCDataChannel` object.  If you use other WebRTC helper libraries, then
+  this module can still be **very useful**!
+
   ## How it Works
 
   The `rtc-bufferedchannel` works by wrapping a standard `RTCDataChannel` with

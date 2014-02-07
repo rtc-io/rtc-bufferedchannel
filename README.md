@@ -4,6 +4,10 @@ This is a wrapper for a native `RTCDataChannel` that ensures that data
 sent over the channel complies with the current data channel size limits
 (which is < 16Kb for firefox <--> chrome interop).
 
+__NOTE:__ The `rtc-bufferedchannel` module is able to wrap any standard
+`RTCDataChannel` object.  If you use other WebRTC helper libraries, then
+this module can still be **very useful**!
+
 
 [![NPM](https://nodei.co/npm/rtc-bufferedchannel.png)](https://nodei.co/npm/rtc-bufferedchannel/)
 
