@@ -71,6 +71,7 @@ module.exports = function(dc, opts) {
   // initialise the send queue
   var sendQueue = [];
   var sendTimer = 0;
+  var retry = (opts || {}).retry !== false;
 
   function buildData() {
     var totalByteSize = 0;
@@ -274,11 +275,17 @@ module.exports = function(dc, opts) {
     }
     catch (e) {
       console.error('error sending chunk: ', e);
-      console.log('buffered amount = ' + dc.bufferedAmount);
-      console.log('ready state = ' + dc.readyState);
+      // console.log('buffered amount = ' + dc.bufferedAmount);
+      // console.log('ready state = ' + dc.readyState);
+
+      // if we are retrying unshift the next payload back onto
+      // the senqQueue
+      if (retry) {
+        sendQueue.unshift(next);
+      }
 
       // TODO: reset the send queue?
-      queue(null, 100);
+      queue(null, 10);
     }
   }
 
