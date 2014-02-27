@@ -7,7 +7,7 @@ var peers = [];
 var channels = [];
 
 // set up the video processing pipeline
-videoproc(video, { calcCharSize: false })
+videoproc(video)
   .on('frame', function(imageData, tick) {
     var data = this.canvas.toDataURL('image/png');
 
@@ -30,7 +30,7 @@ quickconnect('http://rtc.io/switchboard', { room: 'bc-stresstest' })
   })
   .createDataChannel('videoframes')
   .on('videoframes:open', function(dc, id) {
-    var bc = buffered(dc);
+    var bc = buffered(dc, { calcCharSize: false });
     console.log('found new peer (id = ' + id + '), will send video frames');
 
     // when we get some data, then create a new image
