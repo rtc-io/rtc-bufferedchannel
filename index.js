@@ -72,6 +72,7 @@ module.exports = function(dc, opts) {
   var sendQueue = [];
   var sendTimer = 0;
   var retry = (opts || {}).retry !== false;
+  var calcCharSize = (opts || {}).calcCharSize !== false;
 
   function buildData() {
     var totalByteSize = 0;
@@ -208,7 +209,9 @@ module.exports = function(dc, opts) {
       length = data.length;
       while (ii < length) {
         // calculate the current character size
-        charSize = ~-encodeURI(data.charAt(ii)).split(reByteChar).length;
+        charSize = calcCharSize ?
+          ~-encodeURI(data.charAt(ii)).split(reByteChar).length :
+          1;
 
         // if this will tip us over the limit, copy the chunk
         if (currentSize + charSize >= maxSize) {
