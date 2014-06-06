@@ -11,8 +11,7 @@ this module can still be **very useful**!
 
 [![NPM](https://nodei.co/npm/rtc-bufferedchannel.png)](https://nodei.co/npm/rtc-bufferedchannel/)
 
-[![Build Status](https://travis-ci.org/rtc-io/rtc-bufferedchannel.png?branch=master)](https://travis-ci.org/rtc-io/rtc-bufferedchannel)
-[![unstable](http://hughsk.github.io/stability-badges/dist/unstable.svg)](http://github.com/hughsk/stability-badges)
+[![Build Status](https://img.shields.io/travis/rtc-io/rtc-bufferedchannel.svg?branch=master)](https://travis-ci.org/rtc-io/rtc-bufferedchannel) [![unstable](https://img.shields.io/badge/stability-unstable-yellowgreen.svg)](https://github.com/badges/stability-badges) 
 
 ## How it Works
 
