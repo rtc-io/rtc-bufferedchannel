@@ -23,12 +23,12 @@
   },
   "homepage": "https://github.com/rtc-io/rtc-bufferedchannel",
   "devDependencies": {
-    "tape": "^2",
-    "peerpair": "~0.4",
-    "rtc-quickconnect": "^1",
-    "zuul": "^1",
+    "peerpair": "^1.0.1",
     "rtc-media": "^1",
-    "rtc-videoproc": "~0.11"
+    "rtc-quickconnect": "^2.7.0",
+    "rtc-videoproc": "~0.11",
+    "tape": "^2",
+    "zuul": "^1"
   },
   "dependencies": {}
 }
