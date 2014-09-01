@@ -27,7 +27,8 @@
     "rtc-media": "^1",
     "rtc-quickconnect": "^2.7.0",
     "rtc-videoproc": "~0.11",
-    "tape": "^2"
+    "tape": "^2",
+    "testling": "^1.7.0"
   },
   "dependencies": {},
   "testling": {
