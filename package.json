@@ -4,7 +4,7 @@
   "description": "Wraps a core browser RTCDataChannel with a buffering layer to ensure data channel send limits are observed",
   "main": "index.js",
   "scripts": {
-    "test": "$(npm bin)/zuul -- test/all.js",
+    "test": "testling -x ./.travis/start-$BROWSER.sh",
     "gendocs": "gendocs > README.md"
   },
   "repository": {
@@ -27,8 +27,10 @@
     "rtc-media": "^1",
     "rtc-quickconnect": "^2.7.0",
     "rtc-videoproc": "~0.11",
-    "tape": "^2",
-    "zuul": "^1"
+    "tape": "^2"
   },
-  "dependencies": {}
+  "dependencies": {},
+  "testling": {
+    "files": "test/all.js"
+  }
 }
