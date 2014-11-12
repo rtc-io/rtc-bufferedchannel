@@ -4,7 +4,6 @@
 var EventEmitter = require('events').EventEmitter;
 var metaHeader = 'CHUNKS';
 var metaHeaderLength = metaHeader.length;
-var reByteChar = /%..|./;
 var DEFAULT_MAXSIZE = 1024 * 16;
 
 /**
@@ -193,6 +192,23 @@ module.exports = function(dc, opts) {
     return chunks;
   }
 
+  function getCharSize(char) {
+    var charCode = char.charCodeAt(0);
+    if (charCode < 128) {
+      return 1;
+    } else if (charCode < 2048) {
+      return 2;
+    } else if (charCode < 65536) {
+      return 3;
+    } else if (charCode < 2097152) {
+      return 4;
+    } else if (charCode < 67108864) {
+      return 5;
+    } else {
+      return 6;
+    }
+  }
+
   function send(data) {
     var size;
     var chunks = [];
@@ -209,9 +225,7 @@ module.exports = function(dc, opts) {
       length = data.length;
       while (ii < length) {
         // calculate the current character size
-        charSize = calcCharSize ?
-          ~-encodeURI(data.charAt(ii)).split(reByteChar).length :
-          1;
+        charSize = calcCharSize ? getCharSize(data.charAt(ii)): 1;
 
         // if this will tip us over the limit, copy the chunk
         if (currentSize + charSize >= maxSize) {
