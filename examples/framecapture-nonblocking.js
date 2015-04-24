@@ -1,8 +1,10 @@
 var quickconnect = require('rtc-quickconnect');
 var buffered = require('..');
-var media = require('rtc-media');
+var crel = require('crel');
 var videoproc = require('rtc-videoproc');
-var video = document.createElement('video');
+var getUserMedia = require('getusermedia');
+var attachmediastream = require('attachmediastream');
+var video = crel('video');
 var peers = [];
 var channels = [];
 
@@ -17,32 +19,42 @@ videoproc(video)
   });
 
 // capture media and render to the video
-media().render(video);
+getUserMedia({ audio: false, video: true }, function(err, stream) {
+  if (err) {
+    return console.error(err);
+  }
 
-quickconnect('http://rtc.io/switchboard', { room: 'bc-stresstest' })
-  .on('peer:leave', function(id) {
+  attachmediastream(stream, video);
+});
+
+quickconnect('https://switchboard.rtc.io/', { room: 'bc-stresstest' })
+  .on('call:ended', function(id) {
     var peerIdx = peers.indexOf(id);
+    var img = document.getElementById('image_' + id);
 
     if (peerIdx >= 0) {
       peers.splice(peerIdx, 1);
       channels.splice(peerIdx, 1);
     }
+
+    if (img && img.parentNode) {
+      img.parentNode.removeChild(img);
+    }
   })
   .createDataChannel('videoframes')
-  .on('videoframes:open', function(dc, id) {
+  .on('channel:opened:videoframes', function(id, dc) {
     var bc = buffered(dc, { calcCharSize: false });
     console.log('found new peer (id = ' + id + '), will send video frames');
 
     // when we get some data, then create a new image
     bc.on('data', function(data) {
-      console.log('received some image data');
-      // var img;
+      var img = document.getElementById('image_' + id);
+      if (! img) {
+        document.body.appendChild(img = crel('img', { id: 'image_' + id }));
+      }
 
-      // console.log('received some image data', data);
-      // img = document.createElement('img');
-      // img.src = data;
-
-      // document.body.appendChild(img);
+      console.log('received data');
+      img.src = data;
     });
 
     peers.push(id);

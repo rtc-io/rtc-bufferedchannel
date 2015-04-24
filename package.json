@@ -23,15 +23,19 @@
   },
   "homepage": "https://github.com/rtc-io/rtc-bufferedchannel",
   "devDependencies": {
+    "attachmediastream": "^1.2.0",
     "broth": "^2.0.0",
     "browserify": "^9.0.8",
+    "crel": "^2.1.8",
+    "getusermedia": "^1.2.1",
     "peerpair": "^1.0.1",
     "rtc-media": "^1",
     "rtc-quickconnect": "^4.2.2",
     "rtc-videoproc": "~0.11",
     "tap-spec": "^3.0.0",
     "tape": "^4.0.0",
-    "travis-multirunner": "^2.1.0"
+    "travis-multirunner": "^2.1.0",
+    "videoproc": "^1.0.0"
   },
   "dependencies": {}
 }
