@@ -11,7 +11,7 @@ this module can still be **very useful**!
 
 [![NPM](https://nodei.co/npm/rtc-bufferedchannel.png)](https://nodei.co/npm/rtc-bufferedchannel/)
 
-[![Build Status](https://img.shields.io/travis/rtc-io/rtc-bufferedchannel.svg?branch=master)](https://travis-ci.org/rtc-io/rtc-bufferedchannel) [![unstable](https://img.shields.io/badge/stability-unstable-yellowgreen.svg)](https://github.com/badges/stability-badges) 
+[![unstable](https://img.shields.io/badge/stability-unstable-yellowgreen.svg)](https://github.com/dominictarr/stability#unstable) [![Build Status](https://api.travis-ci.org/rtc-io/rtc-bufferedchannel.svg?branch=master)](https://travis-ci.org/rtc-io/rtc-bufferedchannel) [![bitHound Score](https://www.bithound.io/github/rtc-io/rtc-bufferedchannel/badges/score.svg)](https://www.bithound.io/github/rtc-io/rtc-bufferedchannel) 
 
 ## How it Works
 
@@ -48,11 +48,11 @@ var quickconnect = require('rtc-quickconnect');
 var buffered = require('rtc-bufferedchannel');
 
 // include the base64 encoded image data
-var mentosImage = require('../test/data/dietcoke-mentos');
+var mentosImage = require('rtc-bufferedchannel/test/data/dietcoke-mentos');
 
-quickconnect('http://rtc.io/switchboard', { room: 'buffertest' })
+quickconnect('https://switchboard.rtc.io/', { room: 'buffertest' })
   .createDataChannel('mentos')
-  .once('mentos:open', function(dc, id) {
+  .once('channel:opened:mentos', function(id, dc) {
     var bc = buffered(dc);
     console.log('found new peer (id = ' + id + '), sending an image');
 
@@ -70,13 +70,14 @@ quickconnect('http://rtc.io/switchboard', { room: 'buffertest' })
     // send the mentos data to the person that just connected to us
     bc.send(mentosImage);
   });
+
 ```
 
 ## License(s)
 
 ### Apache 2.0
 
-Copyright 2014 National ICT Australia Limited (NICTA)
+Copyright 2015 National ICT Australia Limited (NICTA)
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
