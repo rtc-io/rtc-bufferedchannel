@@ -25,9 +25,9 @@
   "devDependencies": {
     "peerpair": "^1.0.1",
     "rtc-media": "^1",
-    "rtc-quickconnect": "^2.7.0",
+    "rtc-quickconnect": "^4.2.2",
     "rtc-videoproc": "~0.11",
-    "tape": "^2",
+    "tape": "^4.0.0",
     "testling": "^1.7.0"
   },
   "dependencies": {},
