@@ -3,6 +3,7 @@
   "version": "0.5.0",
   "description": "Wraps a core browser RTCDataChannel with a buffering layer to ensure data channel send limits are observed",
   "main": "index.js",
+  "stability": "unstable",
   "scripts": {
     "test": "browserify test/all.js | broth start-$BROWSER | tap-spec",
     "gendocs": "gendocs > README.md"
