@@ -4,9 +4,9 @@ var buffered = require('..');
 // include the base64 encoded image data
 var mentosImage = require('../test/data/dietcoke-mentos');
 
-quickconnect('http://rtc.io/switchboard', { room: 'buffertest' })
+quickconnect('https://switchboard.rtc.io/', { room: 'buffertest' })
   .createDataChannel('mentos')
-  .once('mentos:open', function(dc, id) {
+  .once('channel:opened:mentos', function(id, dc) {
     var bc = buffered(dc);
     console.log('found new peer (id = ' + id + '), sending an image');
 
